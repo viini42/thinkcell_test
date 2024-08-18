@@ -38,17 +38,17 @@ public:
 
     // Ugly, but maybe faster solution?
 
-    const V* valueBeforeRange = &m_valBegin;
+    V valueBeforeRange = m_valBegin;
     auto i = m_map.lower_bound(keyBegin);
     if (i != m_map.begin()) {
-      valueBeforeRange = &std::prev(i)->second;
+      valueBeforeRange = std::prev(i)->second;
     }
     bool entryExistsAtKeyBegin = !m_map.empty() && !(i->first < keyBegin) && !(keyBegin < i->first);
-    V valueBeyondRange{*valueBeforeRange};
+    V valueBeyondRange{valueBeforeRange};
     if (entryExistsAtKeyBegin) {
       valueBeyondRange = i->second;
     }
-    if (!(*valueBeforeRange == val)) {
+    if (!(valueBeforeRange == val)) {
       i = m_map.insert_or_assign(i, keyBegin, val);
     }
     else if (entryExistsAtKeyBegin) {
