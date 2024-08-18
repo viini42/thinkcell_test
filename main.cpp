@@ -28,7 +28,7 @@ void IntervalMapTest() {
     // the others
     assert(m.m_map.empty() || m.m_map.rbegin()->second == m.m_valBegin);
     
-    // Check canonicalness
+    // Check canonicity
     for (auto i = m.m_map.begin(); i != m.m_map.end(); ++i) {
       assert(std::next(i) == m.m_map.end() || !(i->second == std::next(i)->second));
     }
@@ -220,7 +220,7 @@ void IntervalMapTest() {
         int b = 50 + std::rand() % 900;
         int from = std::min(a, b);
         int to = std::max(a, b);
-        int value = std::rand() % 5; // Small number to test canonicalness
+        int value = std::rand() % 10; // Small number to test canonicity
         
         m.assign(from, to, value);
         
