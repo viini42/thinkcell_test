@@ -185,7 +185,7 @@ void IntervalMapTest() {
   
   std::cout << "Randomized test" << std::endl;
   {
-    const unsigned trials = 50;
+    const unsigned trials = 100;
     
     for (unsigned trial = 0; trial < trials; ++trial) {
       std::cout << "Trial " << trial << std::endl;
@@ -220,7 +220,7 @@ void IntervalMapTest() {
         int b = 50 + std::rand() % 900;
         int from = std::min(a, b);
         int to = std::max(a, b);
-        int value = std::rand() % 10; // Small number to test canonicalness
+        int value = std::rand() % 5; // Small number to test canonicalness
         
         m.assign(from, to, value);
         
