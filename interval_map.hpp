@@ -1,4 +1,5 @@
 #include <map>
+#include <iostream> // TODO
 
 template<typename K, typename V>
 class interval_map {
@@ -22,14 +23,51 @@ public:
 	    return;
 	  }
 
+    // Elegant, but slow solution
+    /*
     V valueBeyondRange = (*this)[keyEnd];
     m_map.erase(m_map.lower_bound(keyBegin), m_map.upper_bound(keyEnd));
-    V valueBeforeRange = (*this)[keyBegin];
+    const V& valueBeforeRange = (*this)[keyBegin];
     if (!(valueBeforeRange == val)) {
       m_map.insert_or_assign(keyBegin, val);
     }
     if (!(valueBeyondRange == val)) {
       m_map.insert_or_assign(keyEnd, valueBeyondRange);
+    }
+    */
+
+
+    // Ugly, but maybe faster solution?
+
+    std::cout << "Insert (" << keyBegin << ", " << keyEnd << ") = " << val << "\n";
+    const V* valueBeforeRange = &m_valBegin;
+    auto i = m_map.lower_bound(keyBegin);
+    bool replacesEntry = !m_map.empty() && !(i->first < keyBegin) && !(keyBegin < i->first);
+    if (i != m_map.begin()) {
+      valueBeforeRange = &std::prev(i)->second;
+    }
+    // i is at entry before keyBegin or m_map.begin()
+    V valueBeyondRange{*valueBeforeRange}; // TODO
+    if (!(*valueBeforeRange == val)) {
+      if (replacesEntry) {
+        valueBeyondRange = i->second;
+        std::cout << "replacing\n";
+        std::cout << "value beyond range = " << valueBeyondRange << "\n";
+      }
+      i = m_map.insert_or_assign(i, keyBegin, val);
+    }
+    if (!(keyBegin < m_map.begin()->first)) {
+      ++i;
+    }
+    else {
+      std::cout << "hello!\n";
+    }
+    while (i != m_map.end() && !(keyEnd < i->first)) {
+      valueBeyondRange = i->second; // TODO
+      i = m_map.erase(i);
+    }
+    if (!(valueBeyondRange == val)) {
+      m_map.insert_or_assign(i, keyEnd, valueBeyondRange);
     }
 	}
 

@@ -22,6 +22,8 @@ void printMap(const std::map<K, V>& m) {
 
 void IntervalMapTest() {
   auto checkInvariants = [](const auto& m) {
+    std::cout << "Checking map:\n";
+    printMap(m.m_map);
     assert(m.m_map.empty() || !(m.m_map.begin()->second == m.m_valBegin));
     
     // This condition was not explicitly stated in the requirements, but implicitly follows from
@@ -146,6 +148,37 @@ void IntervalMapTest() {
     assert(m[10] == 'A');
   }
   
+  std::cout << "Insert range containing the initial value at start" << std::endl;
+  {
+    interval_map<Key, Value> m{'F'};
+    m.assign(5, 10, 'A');
+    checkInvariants(m);
+    m.assign(2, 7, 'F');
+    checkInvariants(m);
+    assert(m[6] == 'F');
+    assert(m[7] == 'A');
+    assert(m[9] == 'A');
+    assert(m[10] == 'F');
+  }
+  
+  std::cout << "Insert outer range containing the initial value" << std::endl;
+  {
+    interval_map<Key, Value> m{'F'};
+    m.assign(5, 10, 'A');
+    checkInvariants(m);
+    m.assign(2, 15, 'F');
+    checkInvariants(m);
+  }
+  
+  std::cout << "Insert redundant range" << std::endl;
+  {
+    interval_map<Key, Value> m{'F'};
+    m.assign(2, 15, 'A');
+    checkInvariants(m);
+    m.assign(3, 13, 'A');
+    checkInvariants(m);
+  }
+  
   std::cout << "Randomized test" << std::endl;
   {
     const unsigned trials = 50;
@@ -196,6 +229,8 @@ void IntervalMapTest() {
       }
     }
   }
+  
+  std::cout << "Success!\n";
 }
 
 int main() {
