@@ -1,5 +1,4 @@
 #include <map>
-#include <iostream> // TODO
 
 template<typename K, typename V>
 class interval_map {
@@ -39,31 +38,30 @@ public:
 
     // Ugly, but maybe faster solution?
 
-    std::cout << "Insert (" << keyBegin << ", " << keyEnd << ") = " << val << "\n";
     const V* valueBeforeRange = &m_valBegin;
     auto i = m_map.lower_bound(keyBegin);
-    bool replacesEntry = !m_map.empty() && !(i->first < keyBegin) && !(keyBegin < i->first);
     if (i != m_map.begin()) {
       valueBeforeRange = &std::prev(i)->second;
     }
-    // i is at entry before keyBegin or m_map.begin()
-    V valueBeyondRange{*valueBeforeRange}; // TODO
+    bool entryExistsAtKeyBegin = !m_map.empty() && !(i->first < keyBegin) && !(keyBegin < i->first);
+    V valueBeyondRange{*valueBeforeRange};
+    if (entryExistsAtKeyBegin) {
+      valueBeyondRange = i->second;
+    }
     if (!(*valueBeforeRange == val)) {
-      if (replacesEntry) {
-        valueBeyondRange = i->second;
-        std::cout << "replacing\n";
-        std::cout << "value beyond range = " << valueBeyondRange << "\n";
-      }
       i = m_map.insert_or_assign(i, keyBegin, val);
     }
-    if (!(keyBegin < m_map.begin()->first)) {
+    else if (entryExistsAtKeyBegin) {
+      i = m_map.erase(i);
+    }
+
+    if (i != m_map.end() && !(keyBegin < i->first)) {
+      // Advance beyond keyBegin entry
       ++i;
     }
-    else {
-      std::cout << "hello!\n";
-    }
+    // Erase all entries while keyEnd >= key
     while (i != m_map.end() && !(keyEnd < i->first)) {
-      valueBeyondRange = i->second; // TODO
+      valueBeyondRange = i->second;
       i = m_map.erase(i);
     }
     if (!(valueBeyondRange == val)) {

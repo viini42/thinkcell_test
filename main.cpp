@@ -22,8 +22,6 @@ void printMap(const std::map<K, V>& m) {
 
 void IntervalMapTest() {
   auto checkInvariants = [](const auto& m) {
-    std::cout << "Checking map:\n";
-    printMap(m.m_map);
     assert(m.m_map.empty() || !(m.m_map.begin()->second == m.m_valBegin));
     
     // This condition was not explicitly stated in the requirements, but implicitly follows from
@@ -177,6 +175,12 @@ void IntervalMapTest() {
     checkInvariants(m);
     m.assign(3, 13, 'A');
     checkInvariants(m);
+  }
+  
+  std::cout << "Insert range with value same as initial value into empty map" << std::endl;
+  {
+    interval_map<Key, Value> m{'F'};
+    m.assign(2, 15, 'F');
   }
   
   std::cout << "Randomized test" << std::endl;
